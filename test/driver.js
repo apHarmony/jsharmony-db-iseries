@@ -80,7 +80,7 @@ describe('Driver',function(){
   it('ExecSession: unpooled', function(done) {
     var config = _.extend({_driver: driver, connectionString: "DSN=ODBC;Uid=DBUSER;pwd=DBPASS", initialSize: 1 }, initialdbconfig);
     driver.ExecSession(null, config, function(err, con, preStatements, conComplete) {
-      assert.ifError(err);
+      if(err) return done(err);
       assert.ok(con, "got a connection");
       assert.ok("caller" in conComplete, "got a callback");
       conComplete(err, 'result');
@@ -89,7 +89,7 @@ describe('Driver',function(){
 
   it('ExecSession: pooled', function(done) {
     driver.ExecSession(null, dbconfig, function(err, con, preStatements, conComplete) {
-      assert.ifError(err);
+      if(err) return done(err);
       assert.ok(con, "got a connection");
       assert.ok("caller" in conComplete, "got a callback");
       conComplete(err, 'result');
@@ -168,9 +168,11 @@ describe('Driver',function(){
 
   it('ExecStatement - select', function(done) {
     driver.ExecSession(null, dbconfig, function(err, con, presql, conComplete) {
-      assert.ifError(err);
+      console.log('------------------------1', err);
+      if(err) return conComplete(err);
       driver.ExecStatement(con, "SELECT 1 AS ONE FROM SYSIBM.SYSDUMMY1", function(err, result) {
-        assert.ifError(err);
+        console.log('-------------------2', err);
+        if(err) return conComplete(err);
         assert(result, 'result is not null');
         assert.equal(result.length, 1);
         assert.equal(result[0].ONE, 1);
@@ -181,9 +183,9 @@ describe('Driver',function(){
 
   it('ExecStatement - other', function(done) {
     driver.ExecSession(null, dbconfig, function(err, con, presql, conComplete) {
-      assert.ifError(err);
+      if(err) return conComplete(err);
       driver.ExecStatement(con, "DECLARE GLOBAL TEMPORARY TABLE SESSION.JSHARMONY_META AS (SELECT 'USystem' CONTEXT FROM SYSIBM.SYSDUMMY1) WITH DATA WITH REPLACE", function(err, result) {
-        assert.ifError(err);
+        if(err) return conComplete(err);
         assert.equal(result, null);
         conComplete(err, 'result');
       });
@@ -192,9 +194,9 @@ describe('Driver',function(){
 
   it('ExecStatements - select', function(done) {
     driver.ExecSession(null, dbconfig, function(err, con, presql, conComplete) {
-      assert.ifError(err);
+      if(err) return conComplete(err);
       driver.ExecStatements(con, ["SELECT 1 AS ONE  FROM SYSIBM.SYSDUMMY1", "SELECT 2 AS TWO  FROM SYSIBM.SYSDUMMY1"], function(err, results) {
-        assert.ifError(err);
+        if(err) return conComplete(err);
         assert.equal(results.length, 2);
         assert.equal(results[0][0].ONE, 1);
         assert.equal(results[1][0].TWO, 2);
@@ -205,10 +207,10 @@ describe('Driver',function(){
 
   it('ExecStatements - other and select', function(done) {
     driver.ExecSession(null, dbconfig, function(err, con, presql, conComplete) {
-      assert.ifError(err);
+      if(err) return conComplete(err);
       driver.ExecStatements(con, ["DECLARE GLOBAL TEMPORARY TABLE SESSION.JSHARMONY_META AS (SELECT 'USystem' CONTEXT FROM SYSIBM.SYSDUMMY1) WITH DATA WITH REPLACE", "SELECT 1 AS ONE  FROM SYSIBM.SYSDUMMY1"], function(err, results) {
         console.log(results);
-        assert.ifError(err);
+        if(err) return conComplete(err);
         assert.equal(results.length, 1);
         assert.equal(results[0][0].ONE, 1);
         conComplete(err, 'result');
@@ -264,7 +266,7 @@ describe('Driver',function(){
 
   it('Exec: scalar', function(done) {
     driver.Exec(null, 'S1`', 'scalar', "SELECT 1 AS ONE  FROM SYSIBM.SYSDUMMY1", [], {}, function(err, result, other) {
-      assert.ifError(err);
+      if(err) return done(err);
       assert.equal(result, 1);
       done();
     }, dbconfig);
@@ -272,7 +274,7 @@ describe('Driver',function(){
 
   it('Exec: row', function(done) {
     driver.Exec(null, 'S1`', 'row', "SELECT 1 AS ONE, 2 AS TWO  FROM SYSIBM.SYSDUMMY1", [], {}, function(err, result, other) {
-      assert.ifError(err);
+      if(err) return done(err);
       assert.equal(result.ONE, 1);
       assert.equal(result.TWO, 2);
       done();
@@ -281,7 +283,7 @@ describe('Driver',function(){
 
   it('Exec: recordset', function(done) {
     driver.Exec(null, 'S1`', 'recordset', "SELECT 1 AS ONE  FROM SYSIBM.SYSDUMMY1", [], {}, function(err, result, other) {
-      assert.ifError(err);
+      if(err) return done(err);
       assert.equal(result.length, 1);
       assert.equal(result[0].ONE, 1);
       done();
@@ -290,7 +292,7 @@ describe('Driver',function(){
 
   it('Exec: multirecordset', function(done) {
     driver.Exec(null, 'S1`', 'multirecordset', "SELECT 1 AS ONE  FROM SYSIBM.SYSDUMMY1; SELECT 2 AS TWO FROM SYSIBM.SYSDUMMY1", [], {}, function(err, result, other) {
-      assert.ifError(err);
+      if(err) return done(err);
       assert.equal(result.length, 2);
       assert.equal(result[0][0].ONE, 1);
       assert.equal(result[1][0].TWO, 2);
