@@ -172,8 +172,8 @@ describe('Driver',function(){
       driver.ExecStatement(con, "SELECT 1 AS ONE FROM SYSIBM.SYSDUMMY1", function(err, result) {
         assert.ifError(err);
         assert(result, 'result is not null');
-        assert.equal(result.length, 1);
-        assert.equal(result[0].ONE, 1);
+        assert.equal(result.rows.length, 1);
+        assert.equal(result.rows[0].ONE, 1);
         conComplete(err, 'result');
       });
     }, done);
@@ -184,7 +184,7 @@ describe('Driver',function(){
       assert.ifError(err);
       driver.ExecStatement(con, "DECLARE GLOBAL TEMPORARY TABLE SESSION.JSHARMONY_META AS (SELECT 'USystem' CONTEXT FROM SYSIBM.SYSDUMMY1) WITH DATA WITH REPLACE", function(err, result) {
         assert.ifError(err);
-        assert.equal(result, null);
+        assert.equal(result.rows, null);
         conComplete(err, 'result');
       });
     }, done);
@@ -275,6 +275,15 @@ describe('Driver',function(){
       assert.ifError(err);
       assert.equal(result.ONE, 1);
       assert.equal(result.TWO, 2);
+      done();
+    }, dbconfig);
+  });
+
+  it('Exec: row - returns xrowcount for other statements', function(done) {
+    driver.Exec(null, 'S1`', 'row', "UPDATE SESSION.JSHARMONY_META SET CONTEXT = 'S1'; return_row_count()", [], {}, function(err, result, other) {
+      console.log(err, result, other);
+      if (err) return done(err);
+      assert.equal(result.xrowcount, 1);
       done();
     }, dbconfig);
   });
