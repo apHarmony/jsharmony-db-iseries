@@ -169,7 +169,7 @@ describe('Driver',function(){
   it('ExecStatement - select', function(done) {
     driver.ExecSession(null, dbconfig, function(err, con, presql, conComplete) {
       assert.ifError(err);
-      driver.ExecStatement(con, "SELECT 1 AS ONE FROM SYSIBM.SYSDUMMY1", function(err, result) {
+      driver.ExecStatement(con, dbconfig, "SELECT 1 AS ONE FROM SYSIBM.SYSDUMMY1", function(err, result) {
         assert.ifError(err);
         assert(result, 'result is not null');
         assert.equal(result.rows.length, 1);
@@ -179,10 +179,21 @@ describe('Driver',function(){
     }, done);
   });
 
+  it('ExecStatement - select trim', function(done) {
+    driver.ExecSession(null, dbconfig, function(err, con, presql, conComplete) {
+      assert.ifError(err);
+      driver.ExecStatement(con, dbconfig, "SELECT 'hi      ' AS ONE FROM SYSIBM.SYSDUMMY1", function(err, result) {
+        if (err) return done(err);
+        assert.equal(result.rows[0].ONE, 'hi');
+        conComplete(err, 'result');
+      });
+    }, done);
+  });
+
   it('ExecStatement - other', function(done) {
     driver.ExecSession(null, dbconfig, function(err, con, presql, conComplete) {
       assert.ifError(err);
-      driver.ExecStatement(con, "DECLARE GLOBAL TEMPORARY TABLE SESSION.JSHARMONY_META AS (SELECT 'USystem' CONTEXT FROM SYSIBM.SYSDUMMY1) WITH DATA WITH REPLACE", function(err, result) {
+      driver.ExecStatement(con, dbconfig, "DECLARE GLOBAL TEMPORARY TABLE SESSION.JSHARMONY_META AS (SELECT 'USystem' CONTEXT FROM SYSIBM.SYSDUMMY1) WITH DATA WITH REPLACE", function(err, result) {
         assert.ifError(err);
         assert.equal(result.rows, null);
         conComplete(err, 'result');
@@ -193,7 +204,7 @@ describe('Driver',function(){
   it('ExecStatements - select', function(done) {
     driver.ExecSession(null, dbconfig, function(err, con, presql, conComplete) {
       assert.ifError(err);
-      driver.ExecStatements(con, ["SELECT 1 AS ONE  FROM SYSIBM.SYSDUMMY1", "SELECT 2 AS TWO  FROM SYSIBM.SYSDUMMY1"], function(err, results) {
+      driver.ExecStatements(con, dbconfig, ["SELECT 1 AS ONE  FROM SYSIBM.SYSDUMMY1", "SELECT 2 AS TWO  FROM SYSIBM.SYSDUMMY1"], function(err, results) {
         assert.ifError(err);
         assert.equal(results.length, 2);
         assert.equal(results[0][0].ONE, 1);
@@ -206,7 +217,7 @@ describe('Driver',function(){
   it('ExecStatements - other and select', function(done) {
     driver.ExecSession(null, dbconfig, function(err, con, presql, conComplete) {
       assert.ifError(err);
-      driver.ExecStatements(con, ["DECLARE GLOBAL TEMPORARY TABLE SESSION.JSHARMONY_META AS (SELECT 'USystem' CONTEXT FROM SYSIBM.SYSDUMMY1) WITH DATA WITH REPLACE", "SELECT 1 AS ONE  FROM SYSIBM.SYSDUMMY1"], function(err, results) {
+      driver.ExecStatements(con, dbconfig, ["DECLARE GLOBAL TEMPORARY TABLE SESSION.JSHARMONY_META AS (SELECT 'USystem' CONTEXT FROM SYSIBM.SYSDUMMY1) WITH DATA WITH REPLACE", "SELECT 1 AS ONE  FROM SYSIBM.SYSDUMMY1"], function(err, results) {
         console.log(results);
         assert.ifError(err);
         assert.equal(results.length, 1);
