@@ -197,7 +197,7 @@ describe('Driver',function(){
       if(err) return conComplete(err);
       driver.ExecStatement(con, dbconfig, "DECLARE GLOBAL TEMPORARY TABLE SESSION.JSHARMONY_META AS (SELECT 'USystem' CONTEXT FROM SYSIBM.SYSDUMMY1) WITH DATA WITH REPLACE", function(err, result) {
         if(err) return conComplete(err);
-        assert.equal(result, null);
+        assert.equal(result.rows, null);
         conComplete(err, 'result');
       });
     }, done);
