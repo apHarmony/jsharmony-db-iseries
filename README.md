@@ -36,6 +36,7 @@ This library uses the [NPM odbc library](https://www.npmjs.com/package/odb).  Us
   options: {
     metadata_filter: [],
     automatic_compound_commands: true,
+    idle_timeout: false,
   }
 }
 ```
@@ -59,6 +60,14 @@ Default: true
 ```
 
 If enabled, the driver will automatically wrap `db.Command` statements in a BEGIN...END compound statement to save network roundtrips; otherwise statements must be executed individually.
+
+#### idle_timeout
+
+```
+Default: 1800000 (30 minutes)
+```
+
+Close idle database connection, to minimize chance of network errors when resuming activity on long running servers. The value `false` will disable the feature.
 
 ### Debug Parameters
 
