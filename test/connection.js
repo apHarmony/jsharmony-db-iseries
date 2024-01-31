@@ -30,6 +30,7 @@ dbconfig = _.extend({_driver: new JSHiseries(), connectionString: "DSN=ODBC;Uid=
 var db = new JSHdb(dbconfig);
 dbconfig._driver.platform.Config.debug_params.db_error_sql_state = true;
 dbconfig._driver.platform.Config.debug_params.db_raw_sql = true;
+//dbconfig._driver.platform.Config.debug_params.db_perf_reporting = true;
 
 async.waterfall([
 
