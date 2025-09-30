@@ -1,6 +1,6 @@
 {
   "name": "jsharmony-db-iseries",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "jsHarmony Database Connector for DB2/iSeries",
   "main": "index.js",
   "scripts": {
